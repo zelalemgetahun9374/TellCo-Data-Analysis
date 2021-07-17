@@ -2,11 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
-def plotly_plot_pie(df, column, limit):
+def plotly_plot_pie(df, column, limit=None):
     a = pd.DataFrame({'count': df.groupby([column]).size()}).reset_index()
     a = a.sort_values("count", ascending=False)
-    a.loc[a['count'] < limit, column] = f'Other {column}s'
+    if limit:
+        a.loc[a['count'] < limit, column] = f'Other {column}s'
     fig = px.pie(a, values='count', names=column, title=f'Distribution of {column}s', width=800, height=500)
     fig.show()
 
@@ -19,6 +22,15 @@ def plotly_plot_hist(df, column, color=['cornflowerblue']):
             title=f'Distribution of {column}')
     fig.update_layout(bargap=0.01)
     fig.show()
+
+def plotly_multi_hist(sr, rows, cols, title_text, subplot_titles):
+  fig = make_subplots(rows=rows, cols=cols, subplot_titles=subplot_titles)
+  for i in range(rows):
+    for j in range(cols):
+      x = ["-> " + str(i) for i in sr[i+j].index]
+      fig.add_trace(go.Bar(x=x, y=sr[i+j].values ), row=i+1, col=j+1)
+  fig.update_layout(showlegend=False, title_text=title_text)
+  fig.show()
 
 def plotly_plot_scatter(df, x_col, y_col, marker_size, hover=[]):
     fig = px.scatter(
@@ -80,3 +92,8 @@ def plot_scatter(df: pd.DataFrame, x_col: str, y_col: str) -> None:
     plt.xticks(fontsize=14)
     plt.yticks( fontsize=14)
     plt.show()
+
+def hist(sr):
+    x = ["Id: " + str(i) for i in sr.index]
+    fig = px.histogram(x=x, y=sr.values)
+    fig.show()

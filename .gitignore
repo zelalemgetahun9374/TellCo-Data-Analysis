@@ -1,3 +1,4 @@
 *.xlsx
 *.pyc
 Week1_challenge_data_source.csv
+scripts/__pycache__
